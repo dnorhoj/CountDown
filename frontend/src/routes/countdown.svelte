@@ -53,7 +53,6 @@
     }
 
     .mono {
-        /* Use public/RobotoMono-Bold.ttf from url */
         font-family: "Roboto Mono";
     }
 </style>

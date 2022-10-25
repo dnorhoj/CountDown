@@ -16,7 +16,7 @@
         }).then(([status, data]) => {
             if (status) {
                 localStorage.setItem("token", data.token);
-                $user = data;
+                $user = data.user;
             } else {
                 error = data.message;
                 shake = true;
