@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { user } from "./stores.js";
 
-const baseUrl = "http://localhost:3000"; // Will be changed later when an nginx proxy is set up
+const baseUrl = "/api"; // Will be changed later when an nginx proxy is set up
 
 export const API = async (/** @type {string} */ url, { method = null, body = null, headers = {} } = {}) => {
     headers["Accept"] = "application/json";

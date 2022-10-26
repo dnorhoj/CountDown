@@ -3,6 +3,10 @@ import App from './App.svelte'
 import { API } from './lib/helpers'
 import { user } from './lib/stores'
 
+const app = new App({
+  target: document.getElementById('app')
+})
+
 const token = localStorage.getItem('token');
 if (token) {
   API('user', { body: { token } }).then(([status, data]) => {
@@ -13,9 +17,5 @@ if (token) {
     }
   })
 }
-
-const app = new App({
-  target: document.getElementById('app')
-})
 
 export default app
