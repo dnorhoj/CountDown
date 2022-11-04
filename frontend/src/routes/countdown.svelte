@@ -2,12 +2,13 @@
     import { API } from "../lib/helpers";
     import { onMount } from "svelte";
 
-    let hours, minutes, seconds, countDownTo;
+    let hours, minutes, seconds, countDownTo = null;
 
     const update = () => {
-        if (!countDownTo) return;
+        if (countDownTo === null) return;
 
-        const diff = countDownTo - new Date();
+        const now = new Date().getTime();
+        const diff = countDownTo - now;
 
         hours = String(
             Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
@@ -15,18 +16,18 @@
         minutes = String(
             Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
         ).padStart(2, "0");
-        seconds = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(
-            2,
-            "0"
-        );
+        seconds = String(Math.floor((diff % (1000 * 60)) / 1000))
+            .padStart(2, "0");
     };
 
     onMount(async () => {
         const [success, data] = await API("countdown");
-        countDownTo = new Date(data.date);
-
-        update();
-        setInterval(update, 500);
+        if (success) {
+            countDownTo = data.countdown;
+    
+            update();
+            setInterval(update, 500);
+        }
     });
 </script>
 

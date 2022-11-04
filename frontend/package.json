@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "svelte-routing": "^1.6.0"
+    "svelte-preprocess": "^4.10.7",
+    "svelte-routing": "^1.6.0",
+    "sweetalert2": "^11.6.5"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.2",

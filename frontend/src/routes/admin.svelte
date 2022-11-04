@@ -1,11 +1,17 @@
 <script>
-    import { user } from "../lib/stores";
+    import { user } from "../lib/stores.js";
+    import { fade } from "svelte/transition";
 
     import LoginForm from "../components/admin/login-form.svelte";
+    import AdminPage from "../components/admin/admin-page.svelte";
 </script>
 
 {#if $user === null}
-    <LoginForm />
+    <div in:fade>
+        <LoginForm />
+    </div>
 {:else}
-    <h1>Logged in as {$user.name}</h1>
+    <div in:fade>
+        <AdminPage />
+    </div>
 {/if}

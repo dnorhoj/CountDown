@@ -20,15 +20,11 @@ export const API = async (/** @type {string} */ url, { method = null, body = nul
         body: body ? JSON.stringify(body) : undefined
     });
 
-    if (response.ok) {
-        try {
-            const data = await response.json();
-            return [data.status, data];
-        } catch {
-            return [false, { status: false, message: "Invalid response" }];
-        }
-    } else {
-        return [false, { status: false, message: "The API is down" }];
+    try {
+        const data = await response.json();
+        return [data.status, data];
+    } catch {
+        return [false, { status: false, message: "An error occured!" }];
     }
 
 }

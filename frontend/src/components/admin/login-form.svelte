@@ -1,10 +1,10 @@
 <script>
     import { API } from "../../lib/helpers";
     import { user } from "../../lib/stores";
+    import Swal from "sweetalert2";
 
     let username = "",
         password = "",
-        error = "",
         shake = false;
 
     const login = async () => {
@@ -17,8 +17,31 @@
             if (status) {
                 localStorage.setItem("token", data.token);
                 $user = data.user;
+
+                Swal.fire({
+                    text: "Logged in",
+                    icon: "success",
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 1000,
+                    timerProgressBar: true,
+                });
             } else {
-                error = data.message;
+                data.message;
+
+                // Fire toast swal
+                Swal.fire({
+                    text: "Error; " + data.message,
+                    icon: "error",
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+
+                // Shake the login form
                 shake = true;
                 setTimeout(() => {
                     shake = false;
@@ -41,37 +64,24 @@
 
                 <form on:submit|preventDefault={login}>
                     <div class="flex flex-col items-center justify-center">
-                        <div class="flex flex-col items-center justify-center">
-                            <input
-                                bind:value={username}
-                                class="p-2 rounded-lg w-96 mb-3"
-                                type="text"
-                                placeholder="Username"
-                            />
-                            <input
-                                bind:value={password}
-                                class="p-2 rounded-lg w-96 mb-6"
-                                type="password"
-                                placeholder="Password"
-                            />
-                            <button
-                                class="p-2 rounded-lg w-96 bg-white"
-                                type="submit"
-                            >
-                                Login
-                            </button>
-                        </div>
-                        <div
-                            class="flex flex-col items-center justify-center mt-2"
+                        <input
+                            bind:value={username}
+                            class="p-2 rounded-lg w-96 mb-3"
+                            type="text"
+                            placeholder="Username"
+                        />
+                        <input
+                            bind:value={password}
+                            class="p-2 rounded-lg w-96 mb-6"
+                            type="password"
+                            placeholder="Password"
+                        />
+                        <button
+                            class="p-2 rounded-lg w-96 bg-white"
+                            type="submit"
                         >
-                            <span class="text-red-500">
-                                {#if error}
-                                    {error}
-                                {:else}
-                                    &nbsp;
-                                {/if}
-                            </span>
-                        </div>
+                            Login
+                        </button>
                     </div>
                 </form>
             </div>

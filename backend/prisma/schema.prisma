@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
@@ -40,9 +41,8 @@ model Session {
 
 enum CommentStatus {
   CREATED
-  MODERATED
+  ACCEPTED
   DENIED
-  SHOWN
 }
 
 model Comment {
@@ -52,7 +52,6 @@ model Comment {
 
   name      String?
   content   String
-  published Boolean       @default(false)
   status    CommentStatus @default(CREATED)
 
   moderator   User @relation(fields: [moderatorId], references: [id])

@@ -1,31 +1,17 @@
 <script>
-  import { Router, Route, Link } from "svelte-routing";
-    import Admin from "./routes/admin.svelte";
-  import Countdown from "./routes/countdown.svelte";
+  import { Router, Route } from "svelte-routing";
 
-  // Pretty janky way to not show navbar on countdown page
-  let inCountdown = false;
+  import Admin from "./routes/admin.svelte";
+  import Countdown from "./routes/countdown.svelte";
+  import Index from "./routes/index.svelte";
+  import NotFound from "./routes/404.svelte";
 </script>
 
 <Router>
-  <!-- Janky -->
-  {#if location.pathname !== "/countdown" && !inCountdown}
-    <nav>
-      <Link to="/">Home</Link>
-      <!-- Janky -->
-      <Link
-        to="/countdown"
-        on:click={() => {
-          inCountdown = true;
-        }}
-      >
-        Countdown
-      </Link>
-      <Link to="/about">About</Link>
-    </nav>
-  {/if}
   <div>
+    <Route path="/"><Index /></Route>
     <Route path="/countdown"><Countdown /></Route>
     <Route path="/admin"><Admin /></Route>
+    <Route path="*"><NotFound /></Route>
   </div>
 </Router>
