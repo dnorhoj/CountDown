@@ -1,24 +1,42 @@
 <script>
     import { API } from "../../lib/helpers";
     import { user } from "../../lib/stores";
+    import { writable } from "svelte/store";
     import Swal from 'sweetalert2';
+    import { onMount } from "svelte";
     
     let submissions = null;
+    const filters = writable({
+        status: []
+    });
 
     const getPage = async page => {
-        const [status, data] = await API("submissions?page=" + encodeURIComponent(page));
+        const [status, data] = await API("getSubmissions", {
+            body: {
+                page,
+                status: $filters.status
+            }
+        });
 
         if (!status) {
             // Toast
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong!',
+                text: "Error; " + data.message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
             });
         }
 
         submissions = data.submissions;
     };
+
+    onMount(() => {
+        getPage(1);
+    });
 </script>
 
 <table class="table-auto w-full">

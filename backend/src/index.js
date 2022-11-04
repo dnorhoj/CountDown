@@ -86,16 +86,16 @@ app.post('/login', async (req, res) => {
     });
 });
 
-app.get('/ping', (req, res) => {
+app.get('/ping', async (req, res) => {
     res.json({ status: true, message: 'Pong!' });
 });
 
-app.get('/countdown', (req, res) => {
+app.get('/countdown', async (req, res) => {
     // TODO!
     res.json({ status: true, countdown: Date.now() + 1000 * 3600 * 2 });
 });
 
-app.post('/submissions', (req, res) => {
+app.post('/submissions', async (req, res) => {
     const { name, content } = req.body;
 
     if (!name || !content) {
@@ -124,6 +124,22 @@ app.post('/submissions', (req, res) => {
     }
 
     return res.json({ status: true, message: 'Success' });
+});
+
+app.post("/getSubmissions", auth, async (req, res) => {
+    const submissions = await prisma.comment.findMany({
+        where: {
+            status: "CREATED"
+        },
+        select: {
+            id: true,
+            name: true,
+            content: true,
+            status: true
+        }
+    });
+
+    res.json({ status: true, submissions });
 });
 
 app.listen(port, () => {

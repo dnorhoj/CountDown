@@ -6,9 +6,10 @@ const baseUrl = "/api"; // Will be changed later when an nginx proxy is set up
 export const API = async (/** @type {string} */ url, { method = null, body = null, headers = {} } = {}) => {
     headers["Accept"] = "application/json";
 
-    const user_data = get(user);
-    if (user_data) {
-        headers["Authorization"] = `Bearer ${user_data.token}`;
+    // If user is defined, send the token in authorization header
+    if (get(user)) {
+        const token = localStorage.getItem("token");
+        headers["Authorization"] = `Bearer ${token}`;
     }
     if (body) {
         headers["Content-Type"] = "application/json";
