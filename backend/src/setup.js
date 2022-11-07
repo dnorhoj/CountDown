@@ -11,6 +11,7 @@ if (userAmount === 0) {
         data: {
             username: "admin",
             password,
+            role: "OWNER"
         },
     });
 }

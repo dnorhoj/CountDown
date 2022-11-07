@@ -1,9 +1,14 @@
 import express from 'express';
 import prisma from './lib/prisma.js';
 import bcrypt from 'bcrypt';
+import { CommentStatus } from '@prisma/client';
 
 const app = express();
 const port = process.env.PORT ?? 8000;
+
+const siteSettings = {
+    requireApproval: true
+}
 
 const auth = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1] || req.body.token;
@@ -111,11 +116,114 @@ app.post('/submissions', async (req, res) => {
     }
 
     try {
-        prisma.comment.create({
+        await prisma.comment.create({
             data: {
                 name,
                 content,
-                status: 'CREATED' //TODO - change status from admin panel
+                status: siteSettings.requireApproval ? CommentStatus.CREATED : CommentStatus.ACCEPTED,
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+
+    return res.json({ status: true, message: 'Success', moderation: true });
+});
+
+app.post("/getSubmissions", auth, async (req, res) => {
+    const { status } = req.body;
+
+    const submissions = await prisma.comment.findMany({
+        where: {
+            status: {
+                in: status
+            }
+        },
+        select: {
+            id: true,
+            name: true,
+            content: true,
+            status: true,
+            createdAt: true,
+            moderator: {
+                select: {
+                    username: true
+                }
+            }
+        },
+        orderBy: {
+            createdAt: 'desc'
+        }
+    });
+
+    res.json({ status: true, submissions });
+});
+
+app.post("/setSubmissionStatus", auth, async (req, res) => {
+    const { id, status } = req.body;
+    if (!id || typeof status !== "boolean") {
+        return res.status(400).json({ status: false, message: 'Missing information' });
+    }
+
+    const target_status = status ? "ACCEPTED" : "DENIED";
+
+    try {
+        await prisma.comment.update({
+            where: {
+                id
+            },
+            data: {
+                status: target_status,
+                moderator: {
+                    connect: {
+                        id: req.user.id
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+
+    return res.json({ status: true, message: 'Success', newStatus: target_status });
+});
+
+app.get("/getSettings", auth, async (req, res) => {
+    res.json({ status: true, settings: siteSettings });
+});
+
+app.post("/saveSettings", auth, async (req, res) => {
+    const { requireApproval } = req.body;
+    if (typeof requireApproval !== "boolean") {
+        return res.status(400).json({ status: false, message: 'Missing information' });
+    }
+
+    siteSettings.requireApproval = requireApproval;
+
+    return res.json({ status: true, message: 'Success', settings: siteSettings });
+});
+
+app.post("/changePassword", auth, async (req, res) => {
+    const { password } = req.body;
+    if (!password) {
+        return res.status(400).json({ status: false, message: 'Missing information' });
+    }
+
+    if (password.length < 8) {
+        return res.status(400).json({ status: false, message: 'Password is too short' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+        await prisma.user.update({
+            where: {
+                id: req.user.id
+            },
+            data: {
+                password: hashedPassword
             }
         });
     } catch (e) {
@@ -126,21 +234,89 @@ app.post('/submissions', async (req, res) => {
     return res.json({ status: true, message: 'Success' });
 });
 
-app.post("/getSubmissions", auth, async (req, res) => {
-    const submissions = await prisma.comment.findMany({
-        where: {
-            status: "CREATED"
-        },
+
+app.get("/getUsers", auth, async (req, res) => {
+    if (req.user.role !== "OWNER") {
+        return res.status(401).json({ status: false, message: 'Unauthorized' });
+    }
+
+    const users = await prisma.user.findMany({
         select: {
             id: true,
-            name: true,
-            content: true,
-            status: true
+            username: true,
+            role: true
+        },
+        orderBy: {
+            createdAt: 'asc'
         }
     });
 
-    res.json({ status: true, submissions });
+    res.json({ status: true, users });
 });
+
+app.post("/createUser", auth, async (req, res) => {
+    if (req.user.role !== "OWNER") {
+        return res.status(401).json({ status: false, message: 'Unauthorized' });
+    }
+
+    const { username, password, role } = req.body;
+    if (!username || !password || !role) {
+        return res.status(400).json({ status: false, message: 'Missing information' });
+    }
+
+    if (username.length > 50) {
+        return res.status(400).json({ status: false, message: 'Username is too long' });
+    }
+    if (password.length < 8) {
+        return res.status(400).json({ status: false, message: 'Password is too short' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+        await prisma.user.create({
+            data: {
+                username,
+                password: hashedPassword,
+                role
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+
+    return res.json({ status: true, message: 'Success' });
+});
+
+app.post("/deleteUser", auth, async (req, res) => {
+    if (req.user.role !== "OWNER") {
+        return res.status(401).json({ status: false, message: 'Unauthorized' });
+    }
+
+    const { id } = req.body;
+    if (!id) {
+        return res.status(400).json({ status: false, message: 'Missing information' });
+    }
+
+    if (id === req.user.id) {
+        return res.status(400).json({ status: false, message: 'You cannot delete yourself' });
+    }
+
+    try {
+        await prisma.user.delete({
+            where: {
+                id
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+
+    return res.json({ status: true, message: 'Success' });
+});
+
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
