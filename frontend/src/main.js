@@ -6,7 +6,7 @@ import { user } from './lib/stores';
 let app;
 
 const token = localStorage.getItem('token');
-if (token && !location.pathname.match("^/countdown")) {
+if (token && location.pathname.match("^/admin")) {
   API('me', { body: { token } })
     .then(([status, data]) => {
       if (status) {
