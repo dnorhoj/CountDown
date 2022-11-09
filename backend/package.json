@@ -11,9 +11,9 @@
     "push:setup:start": "prisma db push && node src/setup.js && npm run start"
   },
   "dependencies": {
-    "@prisma/client": "^4.5.0",
+    "@prisma/client": "^4.6.0",
     "bcrypt": "^5.1.0",
     "express": "^4.18.2",
-    "prisma": "^4.5.0"
+    "prisma": "^4.6.0"
   }
 }

@@ -2,13 +2,26 @@ import express from 'express';
 import prisma from './lib/prisma.js';
 import bcrypt from 'bcrypt';
 import { CommentStatus } from '@prisma/client';
+import { verify } from 'hcaptcha';
 
 const app = express();
 const port = process.env.PORT ?? 8000;
 
 const siteSettings = {
-    requireApproval: true
+    requireApproval: true,
+    countDownTo: 0
 }
+
+// Small hardcoded blacklist
+const blacklist = [
+    "neger",
+    "pik",
+    "diller",
+    "lort",
+    "nigger",
+    "nigga",
+    "faggot"
+];
 
 const auth = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1] || req.body.token;
@@ -96,14 +109,30 @@ app.get('/ping', async (req, res) => {
 });
 
 app.get('/countdown', async (req, res) => {
-    // TODO!
-    res.json({ status: true, countdown: Date.now() + 1000 * 3600 * 2 });
+    const comments = await prisma.comment.findMany({
+        where: {
+            status: "ACCEPTED"
+        },
+        select: {
+            id: true,
+            name: true,
+            content: true,
+            color: true,
+            createdAt: true
+        },
+        orderBy: {
+            updatedAt: 'desc'
+        },
+        take: 10
+    });
+
+    res.json({ status: true, countdown: siteSettings.countDownTo, comments });
 });
 
 app.post('/submissions', async (req, res) => {
-    const { name, content } = req.body;
+    const { name, content, color } = req.body;
 
-    if (!name || !content) {
+    if (!name || !content || !color) {
         return res.status(400).json({ status: false, message: 'Mangler information' });
     }
 
@@ -115,12 +144,25 @@ app.post('/submissions', async (req, res) => {
         return res.status(400).json({ status: false, message: 'Teksten er for lang (max 140 tegn)' });
     }
 
+    if (color.length > 7 || !/^#[0-9A-F]{6}$/i.test(color)) {
+        return res.status(400).json({ status: false, message: 'Forkert farve' });
+    }
+
+    if (blacklist.some(word => content.toLowerCase().includes(word))) {
+        return res.status(400).json({ status: false, message: 'Din kommentar indeholder et ord der er på blacklisten' });
+    }
+
+    if (/https?:\/\//.test(content.toLowerCase())) {
+        return res.status(400).json({ status: false, message: 'Din kommentar indeholder et link' });
+    }
+
     try {
         await prisma.comment.create({
             data: {
                 name,
                 content,
                 status: siteSettings.requireApproval ? CommentStatus.CREATED : CommentStatus.ACCEPTED,
+                color
             }
         });
     } catch (e) {
@@ -146,6 +188,7 @@ app.post("/getSubmissions", auth, async (req, res) => {
             content: true,
             status: true,
             createdAt: true,
+            color: true,
             moderator: {
                 select: {
                     username: true
@@ -195,12 +238,13 @@ app.get("/getSettings", auth, async (req, res) => {
 });
 
 app.post("/saveSettings", auth, async (req, res) => {
-    const { requireApproval } = req.body;
-    if (typeof requireApproval !== "boolean") {
+    const { requireApproval, countDownTo } = req.body;
+    if (typeof requireApproval !== "boolean" || typeof countDownTo !== "number") {
         return res.status(400).json({ status: false, message: 'Missing information' });
     }
 
     siteSettings.requireApproval = requireApproval;
+    siteSettings.countDownTo = countDownTo;
 
     return res.json({ status: true, message: 'Success', settings: siteSettings });
 });

@@ -4,6 +4,7 @@
     import Swal from "sweetalert2";
 
     let settings = null;
+    let countDownTo = null;
 
     const getHelp = () => {
         Swal.fire({
@@ -36,6 +37,9 @@
         }
 
         settings = data.settings;
+        const UTCDate = new Date(settings.countDownTo);
+        countDownTo = new Date(UTCDate.getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 19);
+        console.log(countDownTo);
     };
 
     onMount(getSettings);
@@ -70,6 +74,10 @@
             settings = data.settings;
         }
     };
+
+    $: {
+        if (settings) settings.countDownTo = new Date(countDownTo).getTime();
+    }
 </script>
 
 <div class="flex flex-row space-x-3 justify-between items-center">
@@ -97,6 +105,23 @@
             id="requireApproval"
             class="border border-gray-300 rounded-md px-2 py-1"
         />
-        <label for="requireApproval">Require moderator approval for all comments</label>
+        <label for="requireApproval">
+            Require moderator approval for all comments
+        </label>
     </div>
+    <div class="select-none">
+        <label for="countDownTo">Count down to</label>
+        <input
+            type="datetime-local"
+            bind:value={countDownTo}
+            id="countDownTo"
+            class="border border-gray-300 rounded-md px-2 py-1"
+        />
+    </div>
+    <button
+        class="p-2 rounded-xl text-white bg-green-500"
+        on:click={saveSettings}
+    >
+        Save
+    </button>
 {/if}

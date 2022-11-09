@@ -33,21 +33,19 @@
             showCancelButton: true,
             confirmButtonText: "Change Password",
             preConfirm: () => {
-                const password = 
+                const password =
                     // @ts-ignore
                     Swal.getPopup().querySelector("#swal-input1").value;
                 const confirmPassword =
                     // @ts-ignore
-                    Swal.getPopup().querySelector("#swal-input2").value;                    
+                    Swal.getPopup().querySelector("#swal-input2").value;
 
                 if (!password || !confirmPassword) {
                     Swal.showValidationMessage(
                         "Please enter a password and confirm it"
                     );
                 } else if (password !== confirmPassword) {
-                    Swal.showValidationMessage(
-                        "Passwords do not match"
-                    );
+                    Swal.showValidationMessage("Passwords do not match");
                 } else if (password.length < 8) {
                     Swal.showValidationMessage(
                         "Password must be at least 8 characters"
@@ -76,7 +74,7 @@
                         if (result_confirm.isConfirmed) {
                             API("changePassword", {
                                 body: {
-                                    password: result.value.password
+                                    password: result.value.password,
                                 },
                             }).then(([status, data]) => {
                                 if (status) {
@@ -112,17 +110,17 @@
             <h1>Admin Panel</h1>
         </div>
         <div class="flex flex-row w-fit space-x-3">
+            <div
+                class="bg-neutral-700 text-white p-3 shadow-xl rounded-xl text-lg"
+            >
+                Welcome, <strong>{$user.username}</strong>!
+            </div>
             <button
                 class="bg-blue-700 text-white p-3 shadow-xl rounded-xl text-lg"
                 on:click={changePassword}
             >
                 Change password
             </button>
-            <div
-                class="bg-neutral-700 text-white p-3 shadow-xl rounded-xl text-lg"
-            >
-                Welcome, <strong>{$user.username}</strong>!
-            </div>
             <button
                 class="bg-red-800 text-white text-xl p-3 rounded-xl shadow-xl inline-block hover:shadow-lg"
                 on:click={logOut}

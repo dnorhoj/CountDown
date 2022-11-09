@@ -2,24 +2,53 @@
     import { API } from "../lib/helpers";
     import Swal from "sweetalert2";
 
-    let name, content;
+    const randomColor = () => {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+
+        return color;
+    };
+
+    let name, content, color = randomColor();
 
     const sendComment = async () => {
+        const lastComment = localStorage.getItem("lastComment");
+
+        if (lastComment) {
+            const lastCommentTime = parseInt(lastComment);
+
+            if (Date.now() - lastCommentTime < 1000 * 60 * 15) {
+                Swal.fire({
+                    title: "Error",
+                    text: "Du kan kun skrive en kommentar hvert 15. minut",
+                    icon: "error",
+                });
+
+                return;
+            }
+        }
+
         const [status, data] = await API("submissions", {
             body: {
                 name,
                 content,
+                color,
             },
         });
 
         if (status) {
             name = "";
             content = "";
+            color = randomColor();
             Swal.fire({
                 title: "Success!",
                 text: "Kommentar sendt",
                 icon: "success",
             });
+            localStorage.setItem("lastComment", Date.now().toString());
         } else {
             Swal.fire({
                 text: "Fejl; " + data.message,
@@ -130,7 +159,23 @@
                         </p>
                     {/if}
                 </div>
-                <button class="p-2 rounded-lg w-96 bg-white" type="submit">
+
+                <div>
+                    <label
+                        for="pickColor"
+                        class="text-white text-xl font-bold block"
+                    >
+                        Vælg farve
+                    </label>
+                    <input
+                        id="pickColor"
+                        type="color"
+                        bind:value={color}
+                        class="p-1 h-10 rounded-lg w-96 mb-3"
+                    />
+                </div>
+
+                <button class="p-2 rounded-lg w-96 bg-white mt-3" type="submit">
                     Send
                 </button>
             </div>

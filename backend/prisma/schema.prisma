@@ -50,9 +50,10 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name    String?
+  name    String
   content String
   status  CommentStatus @default(CREATED)
+  color   String
 
   moderator   User? @relation(fields: [moderatorId], references: [id])
   moderatorId Int?
