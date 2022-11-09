@@ -1,0 +1,26 @@
+services:
+  nginx:
+    extends:
+      file: docker-compose.yml
+      service: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.dev.conf
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    restart: always
+    expose:
+      - 8000
+    volumes:
+      - ./frontend:/app
+  backend:
+    extends:
+      file: docker-compose.yml
+      service: backend
+    volumes:
+      - ./backend:/app
+  postgres:
+    extends:
+      file: docker-compose.yml
+      service: postgres

@@ -2,7 +2,6 @@ import express from 'express';
 import prisma from './lib/prisma.js';
 import bcrypt from 'bcrypt';
 import { CommentStatus } from '@prisma/client';
-import { verify } from 'hcaptcha';
 
 const app = express();
 const port = process.env.PORT ?? 8000;

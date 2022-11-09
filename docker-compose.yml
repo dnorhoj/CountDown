@@ -11,13 +11,9 @@ services:
     restart: always
     expose:
       - 8000
-    volumes:
-      - ./frontend:/app
   backend:
     build: ./backend
     restart: always
-    volumes:
-      - ./backend:/app
     expose:
       - 8000
     environment:
