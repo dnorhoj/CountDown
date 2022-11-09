@@ -71,7 +71,7 @@
                     <b>Velkommen til GameJam 2022!</b>
                 </p>
                 <p>
-                    Her kan du sende en kommentar til GameJam 2022.
+                    Her kan du sende en motiverende besked så alle til Coding Pirates GameJam 2022 Lyngby kan se det!
                     Din kommentar vil blive vist på nedtællingsskærmen!
                 </p>
                 <p class="mt-3">
@@ -144,14 +144,14 @@
                         for="content"
                         class="text-white text-xl font-bold block"
                     >
-                        Besked
+                        Motiverende besked
                     </label>
                     <textarea
                         bind:value={content}
                         class="p-2 rounded-lg w-96 mb-6"
                         type="text"
                         id="content"
-                        placeholder="Hej"
+                        placeholder="Kom så!"
                     />
                     {#if content?.length > 140}
                         <p class="text-red-500">

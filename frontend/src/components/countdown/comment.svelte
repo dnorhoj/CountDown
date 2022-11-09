@@ -53,7 +53,7 @@
 <div class="fixed" style="top:{coords[1]}px; left:{coords[0]}px;">
     <div class="inline-block card">
         <fieldset
-            class="border shadow-xl border-solid bg-white border-gray-300 p-3 rounded-xl max-w-xs break-all"
+            class="border shadow-xl border-solid bg-white border-gray-300 p-3 rounded-xl max-w-xs break-word"
             bind:this={el}
         >
             <legend
