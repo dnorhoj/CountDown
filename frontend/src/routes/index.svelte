@@ -12,7 +12,9 @@
         return color;
     };
 
-    let name, content, color = randomColor();
+    let name,
+        content,
+        color = randomColor();
 
     const sendComment = async () => {
         const lastComment = localStorage.getItem("lastComment");
@@ -90,95 +92,100 @@
 </script>
 
 <main>
-    <div
-        class="container mx-auto mt-3 bg-neutral-800 rounded-xl shadow-xl text-white p-5 text-center"
-    >
-        <h1 class="text-3xl font-bold">Countdown Chat</h1>
-        <h2 class="text-xl">Coding Pirates GameJam 2022</h2>
-    </div>
-
-    <div
-        class="bg-neutral-800 p-10 rounded-2xl drop-shadow-2xl mx-auto w-fit mt-10 relative"
-    >
-        <button
-            class="absolute text-white top-0 right-0 mt-2 mr-2"
-            on:click={showHelp}
+    <div class="mx-2">
+        <div
+            class="container mx-auto mt-3 bg-neutral-800 rounded-xl shadow-xl text-white p-5 text-center"
         >
-            <!-- question mark -->
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="currentColor"
-                viewBox="0 0 16 16"
+            <h1 class="text-3xl font-bold">Countdown Chat</h1>
+            <h2 class="text-xl">Coding Pirates GameJam 2022</h2>
+        </div>
+
+        <div
+            class="bg-neutral-800 p-5 lg:p-10 rounded-2xl drop-shadow-2xl mx-auto container lg:w-1/3 mt-10 relative"
+        >
+            <button
+                class="absolute text-white top-0 right-0 mt-2 mr-2"
+                on:click={showHelp}
             >
-                <path
-                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"
-                />
-            </svg>
-        </button>
-        <form on:submit|preventDefault={sendComment}>
-            <div class="flex flex-col items-center justify-center">
-                <div>
-                    <label
-                        for="name"
-                        class="text-white text-xl font-bold block"
-                    >
-                        Navn
-                    </label>
-                    <input
-                        bind:value={name}
-                        class="p-2 rounded-lg w-96 mb-3"
-                        type="text"
-                        id="name"
-                        placeholder="Jens Jensen"
+                <!-- question mark -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                >
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"
                     />
-                    {#if name?.length > 50}
-                        <p class="text-red-500">
-                            {name.length}/50
-                        </p>
-                    {/if}
-                </div>
+                </svg>
+            </button>
+            <form on:submit|preventDefault={sendComment}>
+                <div class="flex flex-col items-center justify-center">
+                    <div class="w-full">
+                        <label
+                            for="name"
+                            class="text-white text-xl font-bold block"
+                        >
+                            Navn
+                        </label>
+                        <input
+                            bind:value={name}
+                            class="p-2 rounded-lg w-full mb-3"
+                            type="text"
+                            id="name"
+                            placeholder="Jens Jensen"
+                        />
+                        {#if name?.length > 50}
+                            <p class="text-red-500">
+                                {name.length}/50
+                            </p>
+                        {/if}
+                    </div>
 
-                <div>
-                    <label
-                        for="content"
-                        class="text-white text-xl font-bold block"
+                    <div class="w-full">
+                        <label
+                            for="content"
+                            class="text-white text-xl font-bold block"
+                        >
+                            Motiverende besked
+                        </label>
+                        <textarea
+                            bind:value={content}
+                            class="p-2 rounded-lg w-full mb-6"
+                            type="text"
+                            id="content"
+                            placeholder="Kom så!"
+                        />
+                        {#if content?.length > 140}
+                            <p class="text-red-500">
+                                {content.length}/140
+                            </p>
+                        {/if}
+                    </div>
+
+                    <div class="w-full">
+                        <label
+                            for="pickColor"
+                            class="text-white text-xl font-bold block"
+                        >
+                            Vælg farve
+                        </label>
+                        <input
+                            id="pickColor"
+                            type="color"
+                            bind:value={color}
+                            class="p-1 h-10 rounded-lg w-full mb-3"
+                        />
+                    </div>
+
+                    <button
+                        class="p-2 rounded-lg w-full bg-white mt-3"
+                        type="submit"
                     >
-                        Motiverende besked
-                    </label>
-                    <textarea
-                        bind:value={content}
-                        class="p-2 rounded-lg w-96 mb-6"
-                        type="text"
-                        id="content"
-                        placeholder="Kom så!"
-                    />
-                    {#if content?.length > 140}
-                        <p class="text-red-500">
-                            {content.length}/140
-                        </p>
-                    {/if}
+                        Send
+                    </button>
                 </div>
-
-                <div>
-                    <label
-                        for="pickColor"
-                        class="text-white text-xl font-bold block"
-                    >
-                        Vælg farve
-                    </label>
-                    <input
-                        id="pickColor"
-                        type="color"
-                        bind:value={color}
-                        class="p-1 h-10 rounded-lg w-96 mb-3"
-                    />
-                </div>
-
-                <button class="p-2 rounded-lg w-96 bg-white mt-3" type="submit">
-                    Send
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </main>
