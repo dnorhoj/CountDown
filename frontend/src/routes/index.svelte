@@ -70,10 +70,10 @@
             html: `
             <div class="text-left">
                 <p>
-                    <b>Velkommen til GameJam 2022!</b>
+                    <b>Velkommen til nedtællingsuret til Game Jam!</b>
                 </p>
                 <p>
-                    Her kan du sende en motiverende besked så alle til Coding Pirates GameJam 2022 Lyngby kan se det!
+                    Her kan du sende en motiverende besked så alle til GameJammet kan se det!
                     Din kommentar vil blive vist på nedtællingsskærmen!
                 </p>
                 <p class="mt-3">
@@ -97,7 +97,7 @@
             class="container mx-auto mt-3 bg-neutral-800 rounded-xl shadow-xl text-white p-5 text-center"
         >
             <h1 class="text-3xl font-bold">Countdown Chat</h1>
-            <h2 class="text-xl">Coding Pirates GameJam 2022</h2>
+            <h2 class="text-xl">Coding Pirates GameJam</h2>
         </div>
 
         <div
